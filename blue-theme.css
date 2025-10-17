@@ -1,23 +1,43 @@
 /* === Midnight Blue Universal Theme === */
 /* Base color: #00050f */
 
-html, body {
+html, body, main, section, aside {
   background-color: #00050f !important;
-  color: #c7d4ff !important;
+  color: #ffffff !important;
   background-image: none !important;
+}
+
+/* === Fix variable-based white backgrounds (GitHub, etc.) === */
+*[class*="color-bg"],
+*[class*="bg-"],
+*[class*="markdown-body"],
+.markdown-body,
+.comment-body {
+  background-color: #00050f !important;
+  color: #ffffff !important;
+  background-image: none !important;
+  border-color: #1d9bf0 !important;
 }
 
 * {
   background-color: transparent !important;
-  border-color: #1a2338 !important;
-  color: #c7d4ff !important;
+  border-color: #1d9bf0 !important;
+  color: #ffffff !important;
   box-shadow: none !important;
+  background-image: none !important;
+}
+
+*::before,
+*::after {
+  background-image: none !important;
+  border-color: #1d9bf0 !important;
+  color: #ffffff !important;
 }
 
 /* Inputs, buttons, textareas */
 input, textarea, select, button {
   background-color: #0a1324 !important;
-  color: #e3ecff !important;
+  color: #ffffff !important;
   border: 1px solid #2b3858 !important;
   border-radius: 4px !important;
 }
