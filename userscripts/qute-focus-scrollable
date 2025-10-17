@@ -1,0 +1,22 @@
+
+#!/usr/bin/env bash
+# Focus the element whose outerHTML was hinted (we tagged it with data-qute-scroll)
+id=$(printf '%s' "$QUTE_SELECTED_HTML" | sed -n 's/.*data-qute-scroll="\([^"]*\)".*/\1/p')
+[ -z "$id" ] && id=$(printf '%s' "$QUTE_SELECTED_HTML" | sed -n "s/.*data-qute-scroll='\([^']*\)'.*/\1/p")
+
+if [ -z "$id" ]; then
+  echo ":message-error Could not find data-qute-scroll id" >> "$QUTE_FIFO"
+  exit 1
+fi
+
+cat >> "$QUTE_FIFO" <<EOF
+jseval -q "(() => {
+  const sel = '[data-qute-scroll=\\"$id\\"]';
+  const el = document.querySelector(sel);
+  if (el) {
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex','-1');
+    el.focus({preventScroll:false});
+    el.scrollIntoView({block:'nearest'});
+  }
+})()"
+EOF

@@ -15,6 +15,66 @@ settings:
       wqa: quit --save
   auto_save.session:
     global: true
+  bindings.commands:
+    global:
+      normal:
+        <Alt+1>: null
+        <Alt+2>: null
+        <Alt+3>: null
+        <Alt+4>: null
+        <Alt+5>: null
+        <Alt+6>: null
+        <Alt+7>: null
+        <Alt+8>: null
+        <Alt+9>: null
+        <Ctrl+1>: tab-focus 1
+        <Ctrl+2>: tab-focus 2
+        <Ctrl+3>: tab-focus 3
+        <Ctrl+4>: tab-focus 4
+        <Ctrl+5>: tab-focus 5
+        <Ctrl+6>: tab-focus 6
+        <Ctrl+7>: tab-focus 7
+        <Ctrl+8>: tab-focus 8
+        <Ctrl+9>: tab-focus 9
+        <Ctrl+Space>: fake-key -g <Escape> ;; click-element --select-first --force-event
+          css main,[role="main"],article,body,:root ;; jseval -q "(() => {         try
+          { if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+          } catch(e) {}         try { if (window.top && window.top !== window) window.top.focus();
+          } catch(e) {}         const centerX = Math.floor(window.innerWidth / 2);         const
+          centerY = Math.floor(window.innerHeight / 2);         let el = document.querySelector('main,[role=main],article')
+          || document.body || document.documentElement || document.elementFromPoint(centerX,
+          centerY);         if (!el) return;         const badTags = ['A', 'BUTTON',
+          'IMG', 'SVG', 'INPUT', 'TEXTAREA', 'VIDEO', 'IFRAME'];         while (el
+          && badTags.includes(el.tagName)) el = el.parentElement;         if (!el)
+          el = document.body;         if (el.tabIndex === undefined || el.tabIndex
+          === null) el.tabIndex = -1;         el.focus({preventScroll:true});         el.scrollIntoView({block:'center',
+          inline:'nearest'});         const r = el.getBoundingClientRect();         const
+          flash = document.createElement('div');         flash.style.position = 'fixed';         flash.style.left
+          = r.left + 'px';         flash.style.top = r.top + 'px';         flash.style.width
+          = r.width + 'px';         flash.style.height = r.height + 'px';         flash.style.pointerEvents
+          = 'none';         flash.style.outline = '3px solid orange';         flash.style.borderRadius
+          = '6px';         flash.style.zIndex = 2147483647;         document.body.appendChild(flash);         setTimeout(()
+          => flash.remove(), 650);     })()"
+        <Space>: fake-key -g <Escape> ;; click-element --select-first --force-event
+          css main,[role="main"],article,body,:root ;; jseval -q "(() => { try { if
+          (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+          } catch(e) {} try { if (window.top && window.top !== window) window.top.focus();
+          } catch(e) {} const centerX = Math.floor(window.innerWidth/2), centerY =
+          Math.floor(window.innerHeight/2); let el = document.querySelector('main,[role="main"],article')
+          || document.body || document.documentElement || document.elementFromPoint(centerX,
+          centerY); if (!el) return; if (el.tabIndex === undefined || el.tabIndex
+          === null) el.tabIndex = -1; el.focus({preventScroll:true}); el.scrollIntoView({block:'center',
+          inline:'nearest' }); const r = el.getBoundingClientRect(); const flash =
+          document.createElement('div'); flash.style.position = 'fixed'; flash.style.left
+          = r.left+'px'; flash.style.top = r.top+'px'; flash.style.width = r.width+'px';
+          flash.style.height = r.height+'px'; flash.style.pointerEvents = 'none';
+          flash.style.outline = '3px solid orange'; flash.style.borderRadius = '6px';
+          flash.style.zIndex = 2147483647; document.body.appendChild(flash); setTimeout(()
+          => flash.remove(), 650); try { el.click(); } catch(e) {} })()"
+        c: tab-clone
+        j: cmd-run-with-count 7 scroll down
+        k: cmd-run-with-count 7 scroll up
+        t: cmd-set-text -s :tab-focus
   changelog_after_upgrade:
     global: minor
   colors.completion.category.bg:
