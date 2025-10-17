@@ -53,5 +53,7 @@ settings:
     https://chatgpt.com: access-paste
   content.user_stylesheets:
     global: null
+  tabs.max_width:
+    global: 10
   tabs.position:
     global: left
