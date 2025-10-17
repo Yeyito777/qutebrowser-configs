@@ -47,10 +47,19 @@ settings:
     global: '#090d35'
   colors.tabs.even.bg:
     global: white
+  colors.webpage.darkmode.contrast:
+    global: 0.0
   colors.webpage.darkmode.enabled:
     global: false
+  colors.webpage.darkmode.policy.images:
+    global: smart
+  colors.webpage.darkmode.policy.page:
+    global: smart
+  colors.webpage.darkmode.threshold.foreground:
+    global: 256
   content.javascript.clipboard:
     https://chatgpt.com: access-paste
+    https://github.com: access-paste
   content.user_stylesheets:
     global: null
   tabs.max_width:
