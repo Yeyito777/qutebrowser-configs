@@ -137,8 +137,8 @@ def setup(c, flavour=None, samecolorrows=False):
     c.colors.tabs.odd.fg = fg_secondary
     c.colors.tabs.indicator.error = accent_deep
     c.colors.tabs.indicator.system = "none"
-    c.colors.tabs.selected.even.bg = bg_primary
-    c.colors.tabs.selected.odd.bg = bg_primary
+    c.colors.tabs.selected.even.bg = accent
+    c.colors.tabs.selected.odd.bg = accent
     c.colors.tabs.selected.even.fg = fg_primary
     c.colors.tabs.selected.odd.fg = fg_primary
     # }}}

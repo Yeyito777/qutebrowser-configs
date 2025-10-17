@@ -1,0 +1,93 @@
+/* Whale Deep Ocean Blue webpage theme */
+:root {
+  color-scheme: dark;
+  --whale-bg-primary: #00050f;
+  --whale-bg-secondary: #000a1a;
+  --whale-bg-panel: #001020;
+  --whale-bg-contrast: #002040;
+  --whale-fg-primary: #ffffff;
+  --whale-fg-secondary: #cce7ff;
+  --whale-fg-highlight: #eaf7ff;
+  --whale-accent: #1d9bf0;
+  --whale-accent-hover: #0b72c2;
+  --whale-accent-link: #008fe0;
+  --whale-accent-glow: #4fd0ff;
+  --whale-accent-alt: #00bcd4;
+  --whale-accent-deep: #0070b8;
+}
+
+html {
+  background-color: var(--whale-bg-primary) !important;
+}
+
+body {
+  background-color: var(--whale-bg-secondary) !important;
+  color: var(--whale-fg-secondary) !important;
+  accent-color: var(--whale-accent);
+  caret-color: var(--whale-accent);
+}
+
+body a,
+body a:visited {
+  color: var(--whale-accent-link) !important;
+}
+
+body a:hover,
+body a:focus {
+  color: var(--whale-accent) !important;
+}
+
+body a:active {
+  color: var(--whale-accent-hover) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+em {
+  color: var(--whale-fg-highlight);
+}
+
+pre,
+code,
+kbd,
+samp {
+  background-color: rgba(0, 32, 64, 0.65);
+  color: var(--whale-fg-highlight);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+
+blockquote {
+  border-left: 3px solid var(--whale-bg-contrast);
+  background-color: rgba(0, 20, 32, 0.55);
+}
+
+::selection {
+  background-color: var(--whale-accent) !important;
+  color: var(--whale-bg-primary) !important;
+}
+
+::-moz-selection {
+  background-color: var(--whale-accent) !important;
+  color: var(--whale-bg-primary) !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--whale-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--whale-accent-deep);
+  border-radius: 8px;
+  border: 2px solid var(--whale-bg-secondary);
+}
