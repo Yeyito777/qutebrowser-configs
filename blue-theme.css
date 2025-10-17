@@ -13,7 +13,7 @@ html, body, main, section, aside {
 *[class*="markdown-body"],
 .markdown-body,
 .comment-body {
-  background-color: #00050f !important;
+  background-color: transparent !important;
   color: #ffffff !important;
   background-image: none !important;
   border-color: #1d9bf0 !important;
@@ -49,7 +49,7 @@ input:focus, textarea:focus, select:focus, button:focus {
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-  color: #b6c9ff !important;
+  color: #1d9bf0 !important;
   border-color: #1a2338 !important;
 }
 

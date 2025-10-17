@@ -17,6 +17,8 @@ settings:
     global: true
   changelog_after_upgrade:
     global: minor
+  colors.completion.category.bg:
+    global: '#001020'
   colors.completion.category.border.bottom:
     global: '#1d9bf0'
   colors.completion.category.border.top:
