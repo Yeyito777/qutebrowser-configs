@@ -7,6 +7,7 @@ c.url.searchengines = {
     'yt': 'https://www.youtube.com/results?search_query={}',
     'gh': 'https://github.com/search?q={}',
     'aw': 'https://wiki.archlinux.org/index.php?search={}',
+    'ai': 'https://chatgpt.com/?q={}',
     # … etc
 }
 
@@ -38,4 +39,7 @@ c.hints.selectors = {
 
 # Bind Ctrl+Space to hint those scrollable elements
 config.bind('<Ctrl-Space>', 'hint scrollables')
-
+config.set('content.media.audio_capture', True, 'https://discord.com/*')
+c.tabs.width = 175
+config.bind('<Shift+e>', 'tab-move -')
+config.bind('e', 'tab-move +')
