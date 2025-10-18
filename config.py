@@ -41,5 +41,5 @@ c.hints.selectors = {
 config.bind('<Ctrl-Space>', 'hint scrollables')
 config.set('content.media.audio_capture', True, 'https://discord.com/*')
 c.tabs.width = 175
-config.bind('<Shift+e>', 'tab-move -')
-config.bind('e', 'tab-move +')
+config.bind('<Shift+e>', 'tab-move +')
+config.bind('e', 'tab-move -')
