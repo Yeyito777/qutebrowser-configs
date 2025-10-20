@@ -1,5 +1,5 @@
 import whale
-config.load_autoconfig()
+config.load_autoconfig(False)
 whale.setup(c)
 c.url.searchengines = {
     'DEFAULT': 'https://www.google.com/search?hl=en&q={}',
@@ -40,6 +40,7 @@ c.hints.selectors = {
 # Bind Ctrl+Space to hint those scrollable elements
 config.bind('<Ctrl-Space>', 'hint scrollables')
 config.set('content.media.audio_capture', True, 'https://discord.com/*')
+c.tabs.position = 'left'
 c.tabs.width = 175
 config.bind('<Shift+e>', 'tab-move +')
 config.bind('e', 'tab-move -')
