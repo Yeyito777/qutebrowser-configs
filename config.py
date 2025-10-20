@@ -38,7 +38,10 @@ c.hints.selectors = {
 }
 
 # Bind Ctrl+Space to hint those scrollable elements
-config.bind('<Ctrl-Space>', 'hint scrollables')
+
+# This thing is a fucking hack. And the way this is fixed is by running arbitrary JS on an element. by adding a javascript binding. I will do this. I will fork this browser and add this.
+# I'll take my time adding it though, I might wanna check prs if someone has done this before but I'm imagining something very minimal so I don't know!
+config.bind('<Ctrl-Space>', 'hint scrollables hover')
 config.set('content.media.audio_capture', True, 'https://discord.com/*')
 c.tabs.position = 'left'
 c.tabs.width = 175
