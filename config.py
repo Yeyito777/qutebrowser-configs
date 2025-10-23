@@ -48,3 +48,4 @@ c.tabs.position = 'left'
 c.tabs.width = 175
 config.bind('<Shift+e>', 'tab-move +')
 config.bind('e', 'tab-move -')
+c.colors.webpage.bg = '#00050f' # Anti flashbang

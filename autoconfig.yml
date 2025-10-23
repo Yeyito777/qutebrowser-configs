@@ -6,9 +6,7 @@
 
 config_version: 2
 settings:
-  content.desktop_capture:
-    https://discord.com: true
-  content.media.audio_capture:
-    https://chatgpt.com: true
-  content.register_protocol_handler:
-    https://mail.google.com?extsrc=mailto&url=%25s: true
+  colors.webpage.bg:
+    global: '#000000'
+  colors.webpage.darkmode.enabled:
+    global: false
