@@ -31,24 +31,6 @@
   const mark = (el) => {
     el.setAttribute(ATTR, '1');
     el.style.outline = 'none';
-
-    // Attach simulated-hover detector once per element
-    if (!el.__qt_hover_listener_added) {
-      el.__qt_hover_listener_added = true;
-      el.addEventListener(
-        'mouseover',
-        (e) => {
-          // Focus the hovered element (without showing outline)
-          el.focus({ preventScroll: true });
-
-          // Simulated hover detection
-          if (!e.isTrusted) {
-            alert(`Simulated hover detected at (${e.clientX}, ${e.clientY})`);
-          }
-        },
-        true
-      );
-    }
   };
 
   const unmarkAll = () => {
