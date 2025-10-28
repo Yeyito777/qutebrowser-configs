@@ -43,9 +43,12 @@ c.hints.selectors = {
 # I'll take my time adding it though, I might wanna check prs if someone has done this before but I'm imagining something very minimal so I don't know!
 config.bind('<Ctrl-Space>', 'hint scrollables javascript focus.js')
 config.bind('<Ctrl-J>', 'hint all right-click')
+config.bind('<Ctrl-K>', 'hint all hover')
 config.set('content.media.audio_capture', True, 'https://discord.com/*')
 c.tabs.position = 'left'
 c.tabs.width = 175
 config.bind('<Shift+e>', 'tab-move +')
 config.bind('e', 'tab-move -')
 c.colors.webpage.bg = '#00050f' # Anti flashbang
+c.content.pdfjs = True
+config.set("content.autoplay", False)

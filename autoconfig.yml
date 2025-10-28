@@ -5,8 +5,4 @@
 # Instead, create a config.py - see :help for details.
 
 config_version: 2
-settings:
-  colors.webpage.bg:
-    global: '#000000'
-  colors.webpage.darkmode.enabled:
-    global: false
+settings: {}

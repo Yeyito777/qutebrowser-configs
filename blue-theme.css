@@ -19,10 +19,10 @@ html, body, main, section, aside {
   border-color: #1d9bf0 !important;
 }
 
+/* ⬇️ REPLACE your current `* { ... color: #fff !important; ... }` */
 * {
   background-color: transparent !important;
   border-color: #1d9bf0 !important;
-  color: #ffffff !important;
   box-shadow: none !important;
   background-image: none !important;
 }
@@ -31,6 +31,16 @@ html, body, main, section, aside {
 *::after {
   background-image: none !important;
   border-color: #1d9bf0 !important;
+}
+
+/* ⬇️ New: apply white text everywhere EXCEPT inside code/highlight blocks */
+*:not(pre):not(code):not(pre *):not(code *):not(.hljs):not(.hljs *):not([class*="language-"]):not([class*="language-"] *):not(td *):not(.textLayer):not(.textLayer *) {
+  color: #ffffff !important;
+}
+
+/* ⬇️ Also stop forcing color on pseudo-elements inside code */
+*:not(pre):not(code):not(pre *):not(code *):not(.hljs):not(.hljs *):not([class*="language-"]):not([class*="language-"] *):not(.textLayer):not(.textLayer *)::before,
+*:not(pre):not(code):not(pre *):not(code *):not(.hljs):not(.hljs *):not([class*="language-"]):not([class*="language-"] *):not(.textLayer):not(.textLayer *)::after {
   color: #ffffff !important;
 }
 
@@ -99,4 +109,10 @@ img, video, iframe {
 ::selection {
   background: #4da3ff !important;
   color: #00050f !important;
+}
+
+pre code,
+code[class*="language-"],
+.hljs {
+  filter: brightness(1.2);
 }
