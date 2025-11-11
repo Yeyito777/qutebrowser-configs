@@ -7,8 +7,8 @@ c.url.searchengines = {
     'yt': 'https://www.youtube.com/results?search_query={}',
     'gh': 'https://github.com/search?q={}',
     'aw': 'https://wiki.archlinux.org/index.php?search={}',
-    'ai': 'https://chatgpt.com/?q={}',
-    # … etc
+    'ai':  'https://chatgpt.com/?autosend=1&model=gpt-5&q={}',
+    'ait': 'https://chatgpt.com/?autosend=1&model=gpt-5-thinking&q={}',
 }
 
 config.bind('j', 'cmd-run-with-count 7 scroll down')
@@ -38,9 +38,6 @@ c.hints.selectors = {
 }
 
 # Bind Ctrl+Space to hint those scrollable elements
-
-# This thing is a fucking hack. And the way this is fixed is by running arbitrary JS on an element. by adding a javascript binding. I will do this. I will fork this browser and add this.
-# I'll take my time adding it though, I might wanna check prs if someone has done this before but I'm imagining something very minimal so I don't know!
 config.bind('<Ctrl-Space>', 'hint scrollables javascript focus.js')
 config.bind('<Ctrl-J>', 'hint all right-click')
 config.bind('<Ctrl-K>', 'hint all hover')
