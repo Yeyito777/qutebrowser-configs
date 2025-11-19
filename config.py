@@ -7,8 +7,8 @@ c.url.searchengines = {
     'yt': 'https://www.youtube.com/results?search_query={}',
     'gh': 'https://github.com/search?q={}',
     'aw': 'https://wiki.archlinux.org/index.php?search={}',
-    'ai':  'https://chatgpt.com/?autosend=1&model=gpt-5&q={}',
-    'ait': 'https://chatgpt.com/?autosend=1&model=gpt-5-thinking&q={}',
+    'ai':  'https://chatgpt.com/?temporary-chat=true&autosend=1&model=gpt-5&q={}',
+    'ait': 'https://chatgpt.com/?temporary-chat=true&autosend=1&model=gpt-5-thinking&q={}',
 }
 
 config.bind('j', 'cmd-run-with-count 7 scroll down')
@@ -36,6 +36,7 @@ c.hints.selectors = {
     **getattr(c, "hints.selectors", {}),
     "scrollables": ['[qt-scrollable="1"]']
 }
+
 
 # Bind Ctrl+Space to hint those scrollable elements
 config.bind('<Ctrl-Space>', 'hint scrollables javascript focus.js')

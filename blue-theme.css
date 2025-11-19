@@ -23,14 +23,13 @@ html, body, main, section, aside {
 * {
   background-color: transparent !important;
   border-color: #1d9bf0 !important;
-  box-shadow: none !important;
-  background-image: none !important;
 }
 
-*::before,
-*::after {
-  background-image: none !important;
+*:not([class*="avatar"]):not(button),
+*:not([class*="avatar"]):not(button)::before,
+*:not([class*="avatar"]):not(button)::after {
   border-color: #1d9bf0 !important;
+  background-image: none !important;
 }
 
 /* ⬇️ New: apply white text everywhere EXCEPT inside code/highlight blocks */
@@ -50,6 +49,10 @@ input, textarea, select, button {
   color: #ffffff !important;
   border: 1px solid #2b3858 !important;
   border-radius: 4px !important;
+}
+
+nav, header, [role="dialog"], [role="menu"], [style*="position: fixed"], [style*="position: sticky"] {
+  background-color: #00050f !important;
 }
 
 input:focus, textarea:focus, select:focus, button:focus {
