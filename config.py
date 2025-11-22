@@ -9,6 +9,7 @@ c.url.searchengines = {
     'aw': 'https://wiki.archlinux.org/index.php?search={}',
     'ai':  'https://chatgpt.com/?temporary-chat=true&autosend=1&model=gpt-5&q={}',
     'ait': 'https://chatgpt.com/?temporary-chat=true&autosend=1&model=gpt-5-thinking&q={}',
+    'gem': 'https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview&prompt={}&autosend=1',
 }
 
 config.bind('j', 'cmd-run-with-count 7 scroll down')
