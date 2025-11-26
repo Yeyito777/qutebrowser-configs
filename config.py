@@ -51,3 +51,5 @@ config.bind('e', 'tab-move -')
 c.colors.webpage.bg = '#00050f' # Anti flashbang
 c.content.pdfjs = True
 config.set("content.autoplay", False)
+config.set("content.autoplay", True, "https://discord.com/*")
+c.qt.args += ['autoplay-policy=no-user-gesture-required']
