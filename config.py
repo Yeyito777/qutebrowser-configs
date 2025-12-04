@@ -7,8 +7,8 @@ c.url.searchengines = {
     'yt': 'https://www.youtube.com/results?search_query={}',
     'gh': 'https://github.com/search?q={}',
     'aw': 'https://wiki.archlinux.org/index.php?search={}',
-    'ai':  'https://chatgpt.com/?temporary-chat=true&autosend=1&model=gpt-5&q={}',
-    'ait': 'https://chatgpt.com/?temporary-chat=true&autosend=1&model=gpt-5-thinking&q={}',
+    'ai':  'https://chatgpt.com/?autosend=1&model=gpt-5&q={}',
+    'ait': 'https://chatgpt.com/?autosend=1&model=gpt-5-thinking&q={}',
     'gem': 'https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview&prompt={}&autosend=1',
 }
 
@@ -16,7 +16,6 @@ config.bind('j', 'cmd-run-with-count 7 scroll down')
 config.bind('k', 'cmd-run-with-count 7 scroll up')
 config.bind('c', 'tab-clone')
 c.content.javascript.clipboard = 'access'
-config.set("content.user_stylesheets", ["~/.config/qutebrowser/blue-theme.css"])
 config.bind('t', 'cmd-set-text -s :tab-focus')
 config.set('tabs.new_position.related', 'next')
 config.set('tabs.new_position.unrelated', 'next')
@@ -50,6 +49,17 @@ config.bind('<Shift+e>', 'tab-move +')
 config.bind('e', 'tab-move -')
 c.colors.webpage.bg = '#00050f' # Anti flashbang
 c.content.pdfjs = True
-config.set("content.autoplay", False)
+c.content.autoplay = True
+config.set("content.autoplay", False, "https://www.youtube.com/*")
+config.set("content.autoplay", False, "https://music.youtube.com/*")
 config.set("content.autoplay", True, "https://discord.com/*")
 c.qt.args += ['autoplay-policy=no-user-gesture-required']
+
+# CSS overrides
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/default.css"])
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "monkeytype.com/*")
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/pdf.css"], "qute://pdfjs/web/viewer.html?filename=*")
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/github.css"], "github.com/*")
+for m in ['insert', 'passthrough', 'command', 'caret', 'prompt']:
+    config.bind('<F13>', 'mode-leave', mode=m)
+config.bind('<F13>', 'mode-leave', mode='insert')
