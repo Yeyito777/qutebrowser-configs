@@ -60,6 +60,3 @@ config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/defa
 config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "monkeytype.com/*")
 config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/pdf.css"], "qute://pdfjs/web/viewer.html?filename=*")
 config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/github.css"], "github.com/*")
-for m in ['insert', 'passthrough', 'command', 'caret', 'prompt']:
-    config.bind('<F13>', 'mode-leave', mode=m)
-config.bind('<F13>', 'mode-leave', mode='insert')
