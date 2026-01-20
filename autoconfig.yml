@@ -6,5 +6,5 @@
 
 config_version: 2
 settings:
-  content.desktop_capture:
+  content.media.video_capture:
     https://discord.com: true

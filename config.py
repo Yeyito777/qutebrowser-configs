@@ -14,6 +14,10 @@ c.url.searchengines = {
 
 config.bind('j', 'cmd-run-with-count 7 scroll down')
 config.bind('k', 'cmd-run-with-count 7 scroll up')
+config.bind('<Ctrl-U>', 'cmd-run-with-count 14 scroll up')
+config.bind('<Ctrl-D>', 'cmd-run-with-count 14 scroll down')
+config.bind('p', 'open -- {clipboard}')
+config.bind('P', 'open -t -- {clipboard}') # Consider a primary binding with Ctrl+p/P
 config.bind('c', 'tab-clone')
 c.content.javascript.clipboard = 'access'
 config.bind('t', 'cmd-set-text -s :tab-focus')
@@ -34,7 +38,7 @@ for i in range(1, 10):
 # Custom hint group for elements tagged by the userscript
 c.hints.selectors = {
     **getattr(c, "hints.selectors", {}),
-    "scrollables": ['[qt-scrollable="1"]']
+    "scrollables": ['[qt-scrollable="1"]'],
 }
 
 
@@ -47,6 +51,7 @@ c.tabs.position = 'left'
 c.tabs.width = 175
 config.bind('<Shift+e>', 'tab-move +')
 config.bind('e', 'tab-move -')
+config.bind('=', 'zoom-in')
 c.colors.webpage.bg = '#00050f' # Anti flashbang
 c.content.pdfjs = True
 c.content.autoplay = True
@@ -60,3 +65,14 @@ config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/defa
 config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "monkeytype.com/*")
 config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/pdf.css"], "qute://pdfjs/web/viewer.html?filename=*")
 config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/github.css"], "github.com/*")
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/polymarket.css"], "polymarket.com/*")
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/chatgpt.css"], "chatgpt.com/*")
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "excalidraw.com/*")
+config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "localhost:5173/*")
+
+# Cookie configuration
+c.content.cookies.accept = 'no-3rdparty'
+c.content.cookies.thirdparty_whitelist = [
+  "*://*.hcaptcha.com/*",
+  "*://accounts.google.com/*",
+]
