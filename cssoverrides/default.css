@@ -1,121 +1,32 @@
-/* === Midnight Blue Universal Theme === */
-/* Base color: #00050f */
-
-html, body, main, section, aside {
-  background-color: #00050f !important;
-  color: #ffffff !important;
-  background-image: none !important;
-}
-
-/* === Fix variable-based white backgrounds (GitHub, etc.) === */
-*[class*="color-bg"],
-*[class*="bg-"],
-*[class*="markdown-body"],
-.markdown-body,
-.comment-body {
-  background-color: transparent !important;
-  color: #ffffff !important;
-  background-image: none !important;
-  border-color: #1d9bf0 !important;
-}
-
-/* ⬇️ REPLACE your current `* { ... color: #fff !important; ... }` */
-* {
-  background-color: transparent !important;
-  border-color: #1d9bf0 !important;
-}
-
-*:not([class*="avatar"]):not(button),
-*:not([class*="avatar"]):not(button)::before,
-*:not([class*="avatar"]):not(button)::after {
-  border-color: #1d9bf0 !important;
-  background-image: none !important;
-}
-
-/* ⬇️ New: apply white text everywhere EXCEPT inside code/highlight blocks */
-*:not(pre):not(code):not(pre *):not(code *):not(.hljs):not(.hljs *):not([class*="language-"]):not([class*="language-"] *):not(.textLayer):not(.textLayer *) {
-  color: #ffffff !important;
-}
-
-/* ⬇️ Also stop forcing color on pseudo-elements inside code */
-*:not(pre):not(code):not(pre *):not(code *):not(.hljs):not(.hljs *):not([class*="language-"]):not([class*="language-"] *):not(.textLayer):not(.textLayer *)::before,
-*:not(pre):not(code):not(pre *):not(code *):not(.hljs):not(.hljs *):not([class*="language-"]):not([class*="language-"] *):not(.textLayer):not(.textLayer *)::after {
-  color: #ffffff !important;
-}
-
-/* Inputs, buttons, textareas */
-input, textarea, select, button {
-  background-color: #0a1324 !important;
-  color: #ffffff !important;
-  border: 1px solid #2b3858 !important;
-  border-radius: 4px !important;
-}
-
-nav, header, [role="dialog"], [role="menu"], [style*="position: fixed"], [style*="position: sticky"] {
-  background-color: #00050f !important;
-}
-
-input:focus, textarea:focus, select:focus, button:focus {
-  outline: 1px solid #3f5fb3 !important;
-  background-color: #121c36 !important;
-}
-
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  color: #1d9bf0 !important;
-  border-color: #1a2338 !important;
-}
-
-/* Tables */
-table {
-  border-color: #2b3858 !important;
-  background-color: #00050f !important;
-}
-th {
-  background-color: #0d182d !important;
-  color: #d1ddff !important;
-}
-td {
-  background-color: #0a1324 !important;
-  color: #c7d4ff !important;
-}
-
-/* Code blocks and preformatted text */
-pre, code {
-  background-color: #0d182d !important;
-  color: #a9c1ff !important;
-  border-radius: 4px !important;
-}
-
-/* Scrollbars (for browsers supporting ::-webkit-scrollbar) */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: #00050f;
-}
-::-webkit-scrollbar-thumb {
-  background-color: #1d2a45;
-  border-radius: 6px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: #2b3b5f;
-}
-
-/* Images/videos dim slightly to match dark tone */
-img, video, iframe {
-  filter: brightness(0.85) contrast(1.05);
-}
-
-/* Selection highlight */
 ::selection {
-  background: #4da3ff !important;
-  color: #00050f !important;
+  background-color: #4f5258 !important;
 }
 
-pre code,
-code[class*="language-"],
-.hljs {
-  filter: brightness(1.2);
-}
+/* ::-webkit-scrollbar { */
+/*   background: #00050f !important; */
+/* } */
+/**/
+/* ::-webkit-scrollbar-thumb { */
+/*   background: #00050f !important; */
+/*   border: 1px solid #1d9bf0 !important; */
+/*   border-radius: 0 !important; */
+/* } */
+/**/
+/* ::-webkit-scrollbar-track { */
+/*   background: #00050f !important; */
+/*   border-radius: 0 !important; */
+/* } */
+/**/
+/* ::-webkit-scrollbar-track-piece { */
+/*   background: #00050f !important; */
+/*   border-radius: 0 !important; */
+/* } */
+/**/
+/* ::-webkit-scrollbar-corner { */
+/*   background: #00050f !important; */
+/* } */
+/**/
+/* ::-webkit-scrollbar-button { */
+/*   background: #00050f !important; */
+/*   border-radius: 0 !important; */
+/* } */

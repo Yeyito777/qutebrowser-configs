@@ -17,14 +17,16 @@ html, body, main, section, aside {
 }
 
 /* ⬇️ REPLACE your current `* { ... color: #fff !important; ... }` */
-* {
-  background-color: transparent !important;
+*:not(.ContributionCalendar-day) {
+  background-color: #00050f !important;
   border-color: #1d9bf0 !important;
 }
 
 *:not([class*="avatar"]):not(button),
 *:not([class*="avatar"]):not(button)::before,
-*:not([class*="avatar"]):not(button)::after {
+*:not([class*="avatar"]):not(button)::after,
+*:not(.ContributionCalendar-day),
+{
   border-color: #1d9bf0 !important;
   background-image: none !important;
 }
