@@ -65,8 +65,8 @@ config.set("content.autoplay", False, "https://music.youtube.com/*")
 config.set("content.autoplay", True, "https://discord.com/*")
 c.qt.args += ['autoplay-policy=no-user-gesture-required']
 c.aliases['noh'] = 'search'
-config.bind('<Shift-Escape>', 'fake-key <Escape>', mode='normal')
-config.bind('<Shift-Escape>', 'fake-key <Escape>', mode='insert')
+config.bind('<Ctrl-Escape>', 'fake-key <Escape>', mode='normal')
+config.bind('<Ctrl-Escape>', 'fake-key <Escape>', mode='insert')
 config.bind('<Ctrl-Y>', 'yank-dom')
 c.bindings.key_mappings.pop('<Ctrl-[>', None)
 
