@@ -73,7 +73,8 @@ def setup(c, flavour=None, samecolorrows=False):
     # hints {{{
     c.colors.hints.bg = accent
     c.colors.hints.fg = bg_primary
-    c.hints.border = "1px solid " + accent_hover
+    c.hints.border = "1px solid " + accent
+    c.hints.radius = 0
     c.colors.hints.match.fg = fg_highlight
     # }}}
 
@@ -144,8 +145,9 @@ def setup(c, flavour=None, samecolorrows=False):
     # }}}
 
     # context menus {{{
-    c.colors.contextmenu.menu.bg = bg_panel
+    c.colors.contextmenu.menu.bg = bg_primary
     c.colors.contextmenu.menu.fg = fg_primary
+    c.colors.contextmenu.menu.border = accent
     c.colors.contextmenu.disabled.bg = bg_secondary
     c.colors.contextmenu.disabled.fg = fg_secondary
     c.colors.contextmenu.selected.bg = accent

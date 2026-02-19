@@ -65,9 +65,9 @@ config.set("content.autoplay", False, "https://music.youtube.com/*")
 config.set("content.autoplay", True, "https://discord.com/*")
 c.qt.args += ['autoplay-policy=no-user-gesture-required']
 c.aliases['noh'] = 'search'
-config.bind('<Ctrl-Escape>', 'fake-key <Escape>', mode='normal')
-config.bind('<Ctrl-Escape>', 'fake-key <Escape>', mode='insert')
+config.bind('<Escape>', 'fake-key <Escape>', mode='normal')
 config.bind('<Ctrl-Y>', 'yank-dom')
+config.bind('ac', 'download-clear')
 c.bindings.key_mappings.pop('<Ctrl-[>', None)
 
 # CSS overrides
@@ -96,5 +96,5 @@ config.source('permissions.py')
 c.content.element_shader = True
 
 # Cosmetic
-c.scrolling.smooth_factor = 0.15 # lower = smoother
+c.scrolling.smooth_factor = 0.3 # lower = smoother
 # c.qt.args = ['show-fps-counter']
