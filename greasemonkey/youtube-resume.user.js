@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Resume Playback
 // @namespace    http://tampermonkey.net/
-// @version      3.0
-// @description  Save and restore YouTube video playback positions across sessions
+// @version      3.1
+// @description  Save and restore YouTube video playback positions and loop state across sessions
 // @match        https://www.youtube.com/*
 // @grant        none
 // @run-at       document-idle
@@ -32,18 +32,22 @@
 
     function savePosition(video, videoId) {
         if (!video || !videoId || video.paused && video.currentTime === 0) return;
-        if (video.duration && video.currentTime > video.duration - NEAR_END_THRESHOLD) {
+        if (video.duration && video.currentTime > video.duration - NEAR_END_THRESHOLD && !video.loop) {
+            console.log(DBG, `savePosition: near end and loop=false, removing entry for ${videoId}`);
             localStorage.removeItem(storageKey(videoId));
             return;
         }
         const playing = restoredPlaying !== null ? restoredPlaying : !video.paused;
         if (video.currentTime > 5) {
-            localStorage.setItem(storageKey(videoId), JSON.stringify({
+            const entry = {
                 time: video.currentTime,
                 playing: playing,
+                loop: video.loop,
                 duration: video.duration || 0,
                 savedAt: Date.now()
-            }));
+            };
+            console.log(DBG, `savePosition: saving for ${videoId}: time=${entry.time.toFixed(1)}, playing=${entry.playing}, loop=${entry.loop}`);
+            localStorage.setItem(storageKey(videoId), JSON.stringify(entry));
         }
     }
 
@@ -61,6 +65,14 @@
             console.log(DBG, 'restorePosition: time too low, skipping');
             if (onSettled) onSettled();
             return;
+        }
+
+        // Restore loop state
+        if (data.loop !== undefined) {
+            video.loop = data.loop;
+            console.log(DBG, `restorePosition: restored loop=${video.loop}`);
+        } else {
+            console.log(DBG, 'restorePosition: no loop property in saved data, leaving as-is');
         }
 
         let seekAttempts = 0;
@@ -180,10 +192,15 @@
         }, SAVE_INTERVAL_MS);
 
         video.addEventListener('ended', () => {
-            localStorage.removeItem(storageKey(videoId));
+            if (video.loop) {
+                console.log(DBG, `setupSaving: "ended" event fired but loop=true, keeping entry for ${videoId}`);
+            } else {
+                console.log(DBG, `setupSaving: "ended" event fired, loop=false, removing entry for ${videoId}`);
+                localStorage.removeItem(storageKey(videoId));
+            }
         });
 
-        console.log(DBG, `setupSaving: interval started for ${videoId}, restoredPlaying=${restoredPlaying}`);
+        console.log(DBG, `setupSaving: interval started for ${videoId}, restoredPlaying=${restoredPlaying}, loop=${video.loop}`);
     }
 
     function startForVideo(shouldRestore) {
@@ -210,7 +227,7 @@
             try {
                 const data = JSON.parse(raw);
                 restoredPlaying = data.playing || false;
-                console.log(DBG, `startForVideo: captured restoredPlaying=${restoredPlaying} from localStorage:`, JSON.stringify(data));
+                console.log(DBG, `startForVideo: captured restoredPlaying=${restoredPlaying}, savedLoop=${data.loop} from localStorage:`, JSON.stringify(data));
             } catch (e) {
                 restoredPlaying = null;
                 console.log(DBG, 'startForVideo: failed to parse localStorage entry');
@@ -249,10 +266,11 @@
             const key = storageKey(currentVideoId);
             const existing = localStorage.getItem(key);
             const wasPlaying = existing ? (JSON.parse(existing).playing || false) : false;
-            console.log(DBG, `beforeunload: saving time=${video.currentTime}, playing=${wasPlaying} (from existing entry)`);
+            console.log(DBG, `beforeunload: saving time=${video.currentTime}, playing=${wasPlaying}, loop=${video.loop} (from existing entry)`);
             localStorage.setItem(key, JSON.stringify({
                 time: video.currentTime,
                 playing: wasPlaying,
+                loop: video.loop,
                 duration: video.duration || 0,
                 savedAt: Date.now()
             }));
