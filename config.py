@@ -20,6 +20,8 @@ c.url.searchengines = {
 
 config.bind('j', 'scroll-px 0 280')
 config.bind('k', 'scroll-px 0 -280')
+config.bind('<Ctrl-E>', 'scroll-px 0 140')
+config.bind('<Ctrl-Y>', 'scroll-px 0 -140')
 config.bind('<Ctrl-U>', 'scroll-px 0 -560')
 config.bind('<Ctrl-D>', 'scroll-px 0 560')
 config.bind('<Ctrl-B>', 'scroll-px 0 -1120')
@@ -64,9 +66,11 @@ config.set("content.autoplay", False, "https://www.youtube.com/*")
 config.set("content.autoplay", False, "https://music.youtube.com/*")
 config.set("content.autoplay", True, "https://discord.com/*")
 c.qt.args += ['autoplay-policy=no-user-gesture-required']
+c.qt.args += ['disable-features=UseCameraPipeWire']
 c.aliases['noh'] = 'search'
+config.bind('am', ':quickmark-del ')
 config.bind('<Escape>', 'fake-key <Escape>', mode='normal')
-config.bind('<Ctrl-Y>', 'yank-dom')
+config.bind('<Ctrl-Shift-Y>', 'yank-dom')
 config.bind('ac', 'download-clear')
 c.bindings.key_mappings.pop('<Ctrl-[>', None)
 
@@ -81,12 +85,20 @@ config.set("content.user_stylesheets", ["cssoverrides/default.css"])
 # config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "localhost:*/*")
 # config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "127.0.0.1:*/*")
 
+# Spoof Chrome on Linux globally (must match actual OS to avoid fingerprint
+# inconsistencies — navigator.platform, WebGL renderer, etc. all leak the real OS,
+# and sites like x.com cross-reference these to detect bots)
+c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
+
 # Cookie configuration
 c.content.cookies.accept = 'no-3rdparty'
 c.content.cookies.thirdparty_whitelist = [
     "*://*.recaptcha.net/*",
     "*://*.hcaptcha.com/*",
     "*://accounts.google.com/*",
+    "*://*.x.com/*",
+    "*://*.twitter.com/*",
+    "*://*.chatgpt.com/*",
 ]
 
 # Get preferences set by user during browsing
@@ -98,3 +110,21 @@ c.content.element_shader = True
 # Cosmetic
 c.scrolling.smooth_factor = 0.3 # lower = smoother
 # c.qt.args = ['show-fps-counter']
+
+# Insert-mode special character shortcuts (synthetic paste works universally, including Discord/Slate)
+_ins = "jseval -q (function(){var d=new DataTransfer();d.setData('text/plain','%s');document.activeElement.dispatchEvent(new ClipboardEvent('paste',{clipboardData:d,bubbles:true,cancelable:true}))})()"
+config.bind('<Ctrl-1>', _ins % '←', mode='insert')  # left arrow
+config.bind('<Ctrl-2>', _ins % '•', mode='insert')  # bullet point
+config.bind('<Ctrl-3>', _ins % '→', mode='insert')  # right arrow
+config.bind('<Ctrl-9>', _ins % '✗', mode='insert')  # x mark
+config.bind('<Ctrl-0>', _ins % '✓', mode='insert')  # checkmark
+config.bind('<Ctrl-->', _ins % '—', mode='insert')  # em dash
+
+# Twitter transaction ID fixer (QtWebEngine generates invalid IDs due to
+# CSS animation rendering differences from Chrome; this interceptor replaces
+# them with valid ones via the x_client_transaction library)
+import twitter_txid
+twitter_txid.register()
+
+# Extensions
+config.load_extensions("extensions/")

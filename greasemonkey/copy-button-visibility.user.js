@@ -3,6 +3,9 @@
 // @match        *://*/*
 // @exclude      *://discord.com/*
 // @exclude      *://*.discord.com/*
+// @exclude      *://*.x.com/*
+// @exclude      *://*.twitter.com/*
+// @exclude      *://*.youtube.com/*
 // @run-at       document-end
 // ==/UserScript==
 

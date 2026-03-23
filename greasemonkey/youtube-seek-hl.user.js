@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Vim Keys
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  h/l seek ±5s, j/k volume ±5%
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -12,8 +12,12 @@
     'use strict';
 
     const SEEK_SECONDS = 5;
-    const VOLUME_STEP = 0.05;
+    const VOLUME_STEP = 5; // YouTube API uses 0-100
     const DBG = '[yt-vim]';
+
+    function getPlayer() {
+        return document.querySelector('#movie_player');
+    }
 
     function isTyping(e) {
         const tag = e.target.tagName;
@@ -40,15 +44,25 @@
             e.stopImmediatePropagation();
             console.log(DBG, `seek forward to ${video.currentTime.toFixed(1)}`);
         } else if (e.key === 'j') {
-            video.volume = Math.max(0, video.volume - VOLUME_STEP);
             e.preventDefault();
             e.stopImmediatePropagation();
-            console.log(DBG, `volume down to ${(video.volume * 100).toFixed(0)}%`);
+            const player = getPlayer();
+            if (player && player.setVolume) {
+                const vol = Math.max(0, player.getVolume() - VOLUME_STEP);
+                player.setVolume(vol);
+                if (player.isMuted() && vol > 0) player.unMute();
+                console.log(DBG, `volume down to ${vol}%`);
+            }
         } else if (e.key === 'k') {
-            video.volume = Math.min(1, video.volume + VOLUME_STEP);
             e.preventDefault();
             e.stopImmediatePropagation();
-            console.log(DBG, `volume up to ${(video.volume * 100).toFixed(0)}%`);
+            const player = getPlayer();
+            if (player && player.setVolume) {
+                const vol = Math.min(100, player.getVolume() + VOLUME_STEP);
+                player.setVolume(vol);
+                if (player.isMuted() && vol > 0) player.unMute();
+                console.log(DBG, `volume up to ${vol}%`);
+            }
         }
     }, true);
 
