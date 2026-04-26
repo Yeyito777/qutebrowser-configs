@@ -30,6 +30,8 @@ config.bind('p', 'open -- {clipboard}')
 config.bind('P', 'open -t -- {clipboard}') # Consider a primary binding with Ctrl+p/P
 config.bind('c', 'tab-clone')
 config.bind('<Ctrl-S>', 'shader-toggle')
+# Prevent accidental browser exits from the default Ctrl+Q binding.
+config.bind('<Ctrl-Q>', 'nop')
 c.content.javascript.clipboard = 'access'
 config.bind('t', 'cmd-set-text -s :tab-focus')
 config.set('tabs.new_position.related', 'next')
