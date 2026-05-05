@@ -60,6 +60,7 @@ c.devtools.auto_focus = True
 c.colors.webpage.bg = '#00050f' # Anti flashbang
 c.content.pdfjs = True
 c.content.autoplay = True
+c.content.autoplay = False
 config.set("content.autoplay", False, "https://www.youtube.com/*")
 config.set("content.autoplay", False, "https://music.youtube.com/*")
 config.set("content.autoplay", True, "https://discord.com/*")
@@ -81,13 +82,26 @@ config.set("content.user_stylesheets", ["cssoverrides/default.css"])
 # config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "localhost:*/*")
 # config.set("content.user_stylesheets", ["~/.config/qutebrowser/cssoverrides/null.css"], "127.0.0.1:*/*")
 
+# Spoof Chrome on Linux globally (must match actual OS to avoid fingerprint
+# inconsistencies — navigator.platform, WebGL renderer, etc. all leak the real OS,
+# and sites like x.com cross-reference these to detect bots)
+c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
+
 # Cookie configuration
 c.content.cookies.accept = 'no-3rdparty'
 c.content.cookies.thirdparty_whitelist = [
     "*://*.recaptcha.net/*",
     "*://*.hcaptcha.com/*",
     "*://accounts.google.com/*",
+    "*://*.x.com/*",
+    "*://*.twitter.com/*",
 ]
+
+# Twitter transaction ID fixer (QtWebEngine generates invalid IDs due to
+# CSS animation rendering differences from Chrome; this interceptor replaces
+# them with valid ones via the x_client_transaction library)
+import twitter_txid
+twitter_txid.register()
 
 # Get preferences set by user during browsing
 config.source('permissions.py')
@@ -98,3 +112,5 @@ c.content.element_shader = True
 # Cosmetic
 c.scrolling.smooth_factor = 0.3 # lower = smoother
 # c.qt.args = ['show-fps-counter']
+
+c.input.links_included_in_focus_chain = False

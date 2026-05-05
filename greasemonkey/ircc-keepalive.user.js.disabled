@@ -1,0 +1,80 @@
+// ==UserScript==
+// @name         IRCC MyCIC Keepalive
+// @namespace    exocortex
+// @version      0.1
+// @description  Keep IRCC MyCIC session alive by pinging sessionAlive and auto-clicking Continue session.
+// @match        https://onlineservices-servicesenligne.cic.gc.ca/mycic/*
+// @grant        none
+// @run-at       document-idle
+// ==/UserScript==
+
+(function () {
+  'use strict';
+
+  const LOG_PREFIX = '[ircc-keepalive]';
+  const KEEPALIVE_MS = 4 * 60 * 1000; // 4 minutes, shorter than 8 min inactivity
+  const CLICK_CHECK_MS = 15 * 1000;
+  let lastPing = 0;
+
+  function log(...args) {
+    console.log(LOG_PREFIX, ...args);
+  }
+
+  async function pingSession() {
+    const now = Date.now();
+    if (now - lastPing < 30 * 1000) return; // avoid spam
+    lastPing = now;
+    try {
+      const resp = await fetch('/mycic/sessionAlive', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      log('sessionAlive ping', resp.status);
+    } catch (e) {
+      log('sessionAlive ping failed', e);
+    }
+  }
+
+  function clickContinueIfPresent() {
+    const buttons = Array.from(document.querySelectorAll('button, input[type="button"], input[type="submit"]'));
+    for (const btn of buttons) {
+      const txt = (btn.textContent || btn.value || '').trim().toLowerCase();
+      if (txt === 'continue session' || txt === 'continue') {
+        btn.click();
+        log('clicked continue session');
+        setTimeout(pingSession, 1000);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Periodic keepalive
+  setInterval(() => {
+    pingSession();
+    clickContinueIfPresent();
+  }, KEEPALIVE_MS);
+
+  // Frequent modal watcher
+  setInterval(() => {
+    clickContinueIfPresent();
+  }, CLICK_CHECK_MS);
+
+  // Observe DOM for timeout modal and click immediately
+  const obs = new MutationObserver(() => {
+    clickContinueIfPresent();
+  });
+  obs.observe(document.documentElement, { childList: true, subtree: true });
+
+  // Initial kick after load
+  setTimeout(() => {
+    pingSession();
+    clickContinueIfPresent();
+  }, 5000);
+
+  log('loaded');
+})();

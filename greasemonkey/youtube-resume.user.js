@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Resume Playback
 // @namespace    http://tampermonkey.net/
-// @version      3.1
+// @version      3.2
 // @description  Save and restore YouTube video playback positions and loop state across sessions
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -20,6 +20,7 @@
     let currentVideoId = null;
     let saveTimer = null;
     let restoredPlaying = null;
+    let isInitialLoad = true;
 
     function getVideoId() {
         const params = new URLSearchParams(window.location.search);
@@ -208,56 +209,60 @@
 
         const videoId = getVideoId();
         if (!videoId) {
-            console.log(DBG, `startForVideo(${shouldRestore}): no videoId in URL, skipping`);
+            console.log(DBG, `startForVideo(restore=${shouldRestore}): no videoId in URL, skipping`);
             currentVideoId = null;
             return;
         }
 
         currentVideoId = videoId;
-        console.log(DBG, `startForVideo(${shouldRestore}): videoId=${videoId}`);
+        console.log(DBG, `startForVideo(restore=${shouldRestore}): videoId=${videoId}`);
 
-        if (!shouldRestore) {
-            console.log(DBG, 'startForVideo: initial load, deferring to yt-navigate-finish');
-            return;
-        }
-
-        // Capture the pre-restore playing state before anything overwrites it.
-        const raw = localStorage.getItem(storageKey(videoId));
-        if (raw) {
-            try {
-                const data = JSON.parse(raw);
-                restoredPlaying = data.playing || false;
-                console.log(DBG, `startForVideo: captured restoredPlaying=${restoredPlaying}, savedLoop=${data.loop} from localStorage:`, JSON.stringify(data));
-            } catch (e) {
+        if (shouldRestore) {
+            // Capture the pre-restore playing state before anything overwrites it.
+            const raw = localStorage.getItem(storageKey(videoId));
+            if (raw) {
+                try {
+                    const data = JSON.parse(raw);
+                    restoredPlaying = data.playing || false;
+                    console.log(DBG, `startForVideo: captured restoredPlaying=${restoredPlaying}, savedLoop=${data.loop} from localStorage:`, JSON.stringify(data));
+                } catch (e) {
+                    restoredPlaying = null;
+                    console.log(DBG, 'startForVideo: failed to parse localStorage entry');
+                }
+            } else {
                 restoredPlaying = null;
-                console.log(DBG, 'startForVideo: failed to parse localStorage entry');
+                console.log(DBG, 'startForVideo: no localStorage entry found');
             }
-        } else {
-            restoredPlaying = null;
-            console.log(DBG, 'startForVideo: no localStorage entry found');
         }
 
         waitForVideo((video) => {
             console.log(DBG, `startForVideo: video found, paused=${video.paused}, readyState=${video.readyState}, currentTime=${video.currentTime}`);
-            restorePosition(video, videoId, () => {
-                if (restoredPlaying) {
-                    // Signal Python to grant user activation and play.
-                    // TabRuntimeManager watches console_message for this.
-                    console.log('[yt-resume-ready]');
-                } else {
-                    console.log(DBG, 'startForVideo: seek settled but restoredPlaying=false, not signaling');
-                }
-            });
+            if (shouldRestore) {
+                restorePosition(video, videoId, () => {
+                    if (restoredPlaying) {
+                        // Signal Python to grant user activation and play.
+                        // TabRuntimeManager watches console_message for this.
+                        console.log('[yt-resume-ready]');
+                    } else {
+                        console.log(DBG, 'startForVideo: seek settled but restoredPlaying=false, not signaling');
+                    }
+                });
+            } else {
+                console.log(DBG, 'startForVideo: navigation (not restore), skipping position restore');
+            }
             setupSaving(video, videoId);
         });
     }
 
     window.addEventListener('yt-navigate-finish', () => {
-        console.log(DBG, 'EVENT: yt-navigate-finish');
-        startForVideo(true);
+        const shouldRestore = isInitialLoad;
+        isInitialLoad = false;
+        console.log(DBG, `EVENT: yt-navigate-finish (isInitialLoad=${shouldRestore})`);
+        startForVideo(shouldRestore);
     });
 
     console.log(DBG, 'EVENT: document-idle (script loaded)');
+    // Don't restore on initial script load; wait for yt-navigate-finish to decide.
     startForVideo(false);
 
     window.addEventListener('beforeunload', () => {
