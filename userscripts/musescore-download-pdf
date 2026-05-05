@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -11,7 +12,20 @@ from typing import Iterable
 import requests
 
 
-QUTEBROWSER_CLI = '/home/yeyito/Workspace/Exocortex/external-tools/qutebrowser-cli/bin/qutebrowser-cli'
+def resolve_qutebrowser_cli() -> str:
+    candidates = [
+        os.environ.get('QUTEBROWSER_CLI'),
+        shutil.which('qutebrowser-cli'),
+        '/home/yeyito/Workspace/exocortex/external-tools/qutebrowser-cli/bin/qutebrowser-cli',
+        '/home/yeyito/Workspace/Exocortex/external-tools/qutebrowser-cli/bin/qutebrowser-cli',
+    ]
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    return 'qutebrowser-cli'
+
+
+QUTEBROWSER_CLI = resolve_qutebrowser_cli()
 
 
 JS = r'''(function(){
