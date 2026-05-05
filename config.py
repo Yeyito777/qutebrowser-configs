@@ -69,12 +69,14 @@ config.set("content.autoplay", False, "https://music.youtube.com/*")
 config.set("content.autoplay", True, "https://discord.com/*")
 c.qt.args += ['autoplay-policy=no-user-gesture-required']
 c.qt.args += ['disable-features=UseCameraPipeWire']
+c.qt.args += ['disable-features=UseCameraPipeWire,WebRtcAllowInputVolumeAdjustment']
 c.aliases['noh'] = 'search'
 config.bind('am', ':quickmark-del ')
 config.bind('<Escape>', 'fake-key <Escape>', mode='normal')
 config.bind('<Ctrl-Shift-Y>', 'yank-dom')
 config.bind('ac', 'download-clear')
 c.bindings.key_mappings.pop('<Ctrl-[>', None)
+c.aliases['mspdf'] = 'spawn --userscript /home/yeyito/.runtime/qutebrowser-yeyito/config/userscripts/musescore-download-pdf'
 
 # CSS overrides
 config.set("content.user_stylesheets", ["cssoverrides/default.css"])
@@ -101,6 +103,9 @@ c.content.cookies.thirdparty_whitelist = [
     "*://*.x.com/*",
     "*://*.twitter.com/*",
     "*://*.chatgpt.com/*",
+    "*://*.openai.com/*",
+    "*://*.auth.openai.com/*",
+    "*://*.open.spotify.com/*",
 ]
 
 # Get preferences set by user during browsing
@@ -130,3 +135,6 @@ twitter_txid.register()
 
 # Extensions
 config.load_extensions("extensions/")
+#config.load_extensions("extensions/")
+
+c.input.links_included_in_focus_chain = False

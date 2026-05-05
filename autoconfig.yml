@@ -6,5 +6,5 @@
 
 config_version: 2
 settings:
-  content.notifications.enabled:
-    https://discord.com: false
+  content.unknown_url_scheme_policy:
+    global: allow-all

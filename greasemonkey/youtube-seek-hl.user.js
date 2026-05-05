@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Vim Keys
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  h/l seek ±5s, j/k volume ±5%
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -46,7 +46,6 @@
     function shouldHandle(e) {
         if (e.defaultPrevented) return false;
         if (e.altKey || e.ctrlKey || e.metaKey) return false;
-        if (e.repeat) return false;
         if (isTypingTarget(e.target)) return false;
         return true;
     }

@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from typing import Iterable
+
+import requests
+
+
+QUTEBROWSER_CLI = '/home/yeyito/Workspace/Exocortex/external-tools/qutebrowser-cli/bin/qutebrowser-cli'
+
+
+JS = r'''(function(){
+function getTitle(){
+  var og=document.querySelector('meta[property="og:title"]');
+  if(og&&og.content) return og.content.trim();
+  var ld=Array.from(document.querySelectorAll('script[type="application/ld+json"]')).map(function(s){try{return JSON.parse(s.textContent)}catch(e){return null}}).find(function(o){return o&&o['@type']==='MusicComposition'});
+  if(ld&&ld.name) return String(ld.name).trim();
+  return document.title.replace(/\s*Sheet Music.*$/,'').trim();
+}
+function getScoreId(){
+  var meta=document.querySelector("meta[property='al:ios:url']")
+    || document.querySelector("meta[property='al:android:url']")
+    || document.querySelector("meta[property='og:url']");
+  var txt=(meta&&meta.content)||'';
+  var m=txt.match(/(\d+)(?:\D*)$/);
+  if(!m) throw new Error('could not determine score id');
+  return +m[1];
+}
+function getPageCount(){
+  var body=document.body ? document.body.outerHTML : '';
+  var m=body.match(/\d+ of (\d+) pages/);
+  if(m) return +m[1];
+  m=body.match(/Pages<\/h3><\/th><td><div[\w =\"]+>(\d+)</);
+  if(m) return +m[1];
+  var cls=document.querySelector('#jmuse-scroller-component')?.firstChild?.classList?.[0];
+  if(cls){
+    var n=document.querySelectorAll('.'+cls).length;
+    if(n) return n;
+  }
+  var img=document.querySelector('img[src*=score_]');
+  var className=img&&img.parentElement&&img.parentElement.className;
+  if(className){
+    var count=document.getElementsByClassName(className).length;
+    if(count) return count;
+  }
+  throw new Error('could not determine page count');
+}
+function getBundleUrl(){
+  var urls=Array.from(document.querySelectorAll('script[src],link[href]')).map(function(e){return e.src||e.href});
+  var url=urls.find(function(u){return /https:\/\/musescore\.com\/static\/public\/build\/[\w\/]+\/\d+\/\d+\.\w+\.js/.test(u)});
+  if(!url) throw new Error('could not find MuseScore bundle url');
+  return url;
+}
+function buildTokenGenerator(){
+  var url=getBundleUrl();
+  var x=new XMLHttpRequest();
+  x.open('GET', url, false);
+  x.send(null);
+  if(x.status !== 200) throw new Error('failed to fetch MuseScore bundle: '+x.status);
+  var script=x.responseText;
+  var randomToken=(script.match(/"([\W\w]{1,50})"\)\.substr\(0, *4\)/)||[])[1];
+  var parts=script.split(/, *(\d+): *(?:function)*\([\w,]{1,8}\)(?: *=> *|)\{/);
+  var functionNumber=null;
+  for(var i=0;i<parts.length;i++){
+    if(parts[i].includes('_digestsize') && parts[i].includes('_blocksize')){
+      functionNumber=parts[i-1];
+      break;
+    }
+  }
+  if(!randomToken || !functionNumber) throw new Error('failed to reconstruct MuseScore token generator');
+  script=script.replace(/\(self\.[^}]*(?=\{(\d+):)/,'(function (modules) { var installedModules = {}; function __webpack_require__(moduleId) { if (installedModules[moduleId]) { return installedModules[moduleId].exports; } var module = installedModules[moduleId] = { i: moduleId, l: false, exports: {} }; modules[moduleId].call(module.exports, module, module.exports, __webpack_require__); module.l = true; return module.exports; } __webpack_require__.m = modules; __webpack_require__.c = installedModules; return __webpack_require__(__webpack_require__.s = '+functionNumber+'); })(');
+  script=script.replace(/}}]\)/,'}})');
+  script=script.replace(/_digestsize=(\d+),\w+\.exports=function\(/, function(match, a){ return '_digestsize='+a+',window.generateToken=function(' });
+  new Function(script)();
+  return function(id, type, index){
+    return window.generateToken(String(id)+type+String(index)+randomToken).substring(0, 4);
+  };
+}
+function getSignedImageUrl(id, index, getToken){
+  var token=getToken(id, 'img', index);
+  var x=new XMLHttpRequest();
+  x.open('GET', '/api/jmuse?id='+id+'&index='+index+'&type=img', false);
+  x.setRequestHeader('Authorization', token);
+  x.send(null);
+  if(x.status !== 200) throw new Error('MuseScore image API returned '+x.status+' for page '+(index+1));
+  var data=JSON.parse(x.responseText);
+  if(!data || !data.info || !data.info.url) throw new Error('missing signed url for page '+(index+1));
+  return data.info.url;
+}
+var scoreId=getScoreId();
+var pageCount=getPageCount();
+var getToken=buildTokenGenerator();
+var urls=[];
+for(var i=0;i<pageCount;i++) urls.push(getSignedImageUrl(scoreId, i, getToken));
+return JSON.stringify({scoreId: scoreId, title: getTitle(), pageCount: pageCount, urls: urls});
+})()'''
+
+
+def qute_command(cmd: str) -> None:
+    fifo = os.environ.get('QUTE_FIFO')
+    if not fifo:
+        return
+    with open(fifo, 'a', encoding='utf-8') as f:
+        f.write(cmd + '\n')
+
+
+def qute_message(level: str, message: str) -> None:
+    qute_command(f'message-{level} {json.dumps(message)}')
+
+
+def sanitize_filename(name: str) -> str:
+    name = re.sub(r'[\x00-\x1f<>:"/\\|?*]+', '', name).strip().rstrip('.')
+    name = re.sub(r'\s+', ' ', name)
+    return name or 'musescore-score'
+
+
+def unique_path(path: Path) -> Path:
+    if not path.exists():
+        return path
+    stem, suffix = path.stem, path.suffix
+    i = 1
+    while True:
+        candidate = path.with_name(f'{stem} ({i}){suffix}')
+        if not candidate.exists():
+            return candidate
+        i += 1
+
+
+def run_console(basedir: str, tab_index: str, js: str) -> str:
+    # QUTE_TAB_INDEX is 1-based; qutebrowser-cli @N expects 0-based tab-bar index.
+    idx = int(tab_index) - 1
+    if idx < 0:
+        raise RuntimeError(f'invalid QUTE_TAB_INDEX: {tab_index!r}')
+
+    tab = f'@{idx}'
+    proc = subprocess.run(
+        [QUTEBROWSER_CLI, 'console', '-b', basedir, tab, js],
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    if proc.returncode != 0:
+        stderr = (proc.stderr or proc.stdout).strip()
+        raise RuntimeError(f'qutebrowser console failed: {stderr}')
+
+    out = proc.stdout.strip()
+    if not out or out == 'undefined':
+        raise RuntimeError('qutebrowser console returned no value; the page script likely threw an exception')
+    return out
+
+
+def ensure_tools() -> None:
+    missing = []
+    if not (Path(QUTEBROWSER_CLI).is_file() and os.access(QUTEBROWSER_CLI, os.X_OK)):
+        missing.append(f'qutebrowser-cli ({QUTEBROWSER_CLI})')
+    for tool in ['rsvg-convert', 'convert']:
+        if subprocess.run(['bash', '-lc', f'command -v {tool} >/dev/null'], check=False).returncode != 0:
+            missing.append(tool)
+    if missing:
+        raise RuntimeError('missing required tools: ' + ', '.join(missing))
+
+
+def download_files(urls: Iterable[str], tempdir: Path) -> list[Path]:
+    out = []
+    for i, url in enumerate(urls):
+        ext = '.svg' if '.svg' in url else '.png'
+        path = tempdir / f'page_{i:03d}{ext}'
+        r = requests.get(url, timeout=90)
+        r.raise_for_status()
+        path.write_bytes(r.content)
+        out.append(path)
+    return out
+
+
+def build_pdf(inputs: list[Path], output: Path) -> None:
+    if not inputs:
+        raise RuntimeError('no score pages found')
+    exts = {p.suffix.lower() for p in inputs}
+    if exts == {'.svg'}:
+        subprocess.run(['rsvg-convert', '-f', 'pdf', '-o', str(output), *map(str, inputs)], check=True)
+        return
+    if exts == {'.png'}:
+        subprocess.run(['convert', *map(str, inputs), str(output)], check=True)
+        return
+
+    with tempfile.TemporaryDirectory() as pdfdir_str:
+        pdfdir = Path(pdfdir_str)
+        page_pdfs = []
+        for i, src in enumerate(inputs):
+            page_pdf = pdfdir / f'page_{i:03d}.pdf'
+            if src.suffix.lower() == '.svg':
+                subprocess.run(['rsvg-convert', '-f', 'pdf', '-o', str(page_pdf), str(src)], check=True)
+            else:
+                subprocess.run(['convert', str(src), str(page_pdf)], check=True)
+            page_pdfs.append(page_pdf)
+        subprocess.run(['pdfunite', *map(str, page_pdfs), str(output)], check=True)
+
+
+def main() -> int:
+    try:
+        ensure_tools()
+        qute_url = os.environ.get('QUTE_URL', '')
+        if 'musescore.com/' not in qute_url:
+            raise RuntimeError('current tab is not a MuseScore score page')
+
+        basedir = str(Path(os.environ['QUTE_CONFIG_DIR']).resolve().parent)
+        tab_index = os.environ['QUTE_TAB_INDEX']
+        download_dir = Path(os.environ.get('MUSESCORE_DOWNLOAD_DIR') or (Path.home() / 'Desktop' / 'musescore-sheets'))
+        download_dir.mkdir(parents=True, exist_ok=True)
+
+        qute_message('info', 'MuseScore: extracting score pages…')
+        info = json.loads(run_console(basedir, tab_index, JS))
+
+        filename = sanitize_filename(info['title']) + '.pdf'
+        output = unique_path(download_dir / filename)
+
+        qute_message('info', f"MuseScore: downloading {info['pageCount']} page(s)…")
+        with tempfile.TemporaryDirectory() as tempdir_str:
+            tempdir = Path(tempdir_str)
+            inputs = download_files(info['urls'], tempdir)
+            qute_message('info', 'MuseScore: building PDF…')
+            build_pdf(inputs, output)
+
+        qute_message('info', f'MuseScore PDF saved to {output}')
+        return 0
+    except Exception as e:
+        qute_message('error', f'MuseScore PDF download failed: {e}')
+        return 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())
